@@ -221,6 +221,10 @@
           document.body.appendChild(script);
         }
 
+        const answerReviewScript = document.createElement("script");
+        answerReviewScript.src = "./answer-review.js";
+        document.body.appendChild(answerReviewScript);
+
         function updateMilestones() {
           const completed = document.querySelectorAll(".question-card.is-complete").length;
           document.querySelectorAll(".milestone-card").forEach((card) => {
