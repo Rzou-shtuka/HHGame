@@ -33,13 +33,23 @@
   </style>
 </head>
 <body>
-  <div class="loading-card" id="loadingCard">
+  <div class="loading-card">
     <h1>HOUHOU GAME</h1>
     <p>正在加载游戏……</p>
   </div>
 
   <script>
     (async function loadGame() {
+      function loadScript(src) {
+        return new Promise((resolve, reject) => {
+          const script = document.createElement("script");
+          script.src = src;
+          script.onload = resolve;
+          script.onerror = reject;
+          document.body.appendChild(script);
+        });
+      }
+
       try {
         const response = await fetch("./game-source.html", { cache: "no-store" });
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -173,7 +183,6 @@
         `;
         document.head.appendChild(milestoneStyle);
 
-        const footer = document.querySelector(".footer-note");
         const milestoneSection = document.createElement("section");
         milestoneSection.className = "milestone-section";
         milestoneSection.id = "milestoneSection";
@@ -181,79 +190,51 @@
         milestoneSection.innerHTML = `
           <div class="milestone-heading">
             <h2 id="milestoneTitle">通关结果</h2>
-            <p>每完成一些问题，就会解锁一段新的结果。</p>
+            <p>只有被判定为“回答正确”的问题才计入通关进度。</p>
           </div>
           <div class="milestone-grid">
             <article class="milestone-card" data-threshold="3">
               <span class="milestone-badge">3 个问题</span>
-              <h3>通关奖励</h3>
-              <p>当你成功回答 3 个问题，并且因为这个游戏感到一些快乐的时候，恭喜你，你成为了这世界上唯一一个通关的人哟。这是你的通关奖励</p>
-              <span class="milestone-state">再完成 3 个问题即可解锁</span>
+              <h3>特别通关</h3>
+              <p>当你成功回答 3 个问题，并且因为这个游戏感到一些快乐的时候，恭喜你，你成为了这世界上唯一一个通关的人哟。</p>
+              <span class="milestone-state">还差 3 个正确回答</span>
             </article>
             <article class="milestone-card" data-threshold="7">
               <span class="milestone-badge">7 个问题</span>
-              <h3>特别奖励</h3>
+              <h3>奖励解锁</h3>
               <p>当你成功回答 7 个问题，你就能解锁一个奖励：Demo7 背后的小故事。</p>
-              <span class="milestone-state">再完成 7 个问题即可解锁</span>
+              <span class="milestone-state">还差 7 个正确回答</span>
             </article>
             <article class="milestone-card" data-threshold="12">
               <span class="milestone-badge">12 个问题</span>
               <h3>完美通关</h3>
-              <p>当你成功回答 12 个问题，你就能完美通关，并得到一个彩蛋哟。</p>
-              <span class="milestone-state">再完成 12 个问题即可解锁</span>
+              <p>当你成功回答 12 个问题，你就能完美通关，并得到一个关于彩蛋的提示。</p>
+              <span class="milestone-state">还差 12 个正确回答</span>
             </article>
           </div>
         `;
 
-        if (footer && footer.parentNode) {
+        const footer = document.querySelector(".footer-note");
+        if (footer?.parentNode) {
           footer.parentNode.insertBefore(milestoneSection, footer);
         } else {
           document.querySelector("main")?.appendChild(milestoneSection);
         }
 
         for (const oldScript of originalScripts) {
-          const script = document.createElement("script");
           if (oldScript.src) {
-            script.src = oldScript.src;
+            await loadScript(oldScript.src);
           } else {
+            const script = document.createElement("script");
             script.textContent = oldScript.textContent;
+            document.body.appendChild(script);
           }
-          document.body.appendChild(script);
         }
 
-        const answerReviewScript = document.createElement("script");
-        answerReviewScript.src = "./answer-review.js";
-        document.body.appendChild(answerReviewScript);
-
-        function updateMilestones() {
-          const completed = document.querySelectorAll(".question-card.is-complete").length;
-          document.querySelectorAll(".milestone-card").forEach((card) => {
-            const threshold = Number(card.dataset.threshold);
-            const remaining = Math.max(0, threshold - completed);
-            const unlocked = completed >= threshold;
-            card.classList.toggle("is-unlocked", unlocked);
-            card.querySelector(".milestone-state").textContent = unlocked
-              ? "✓ 已解锁"
-              : `再完成 ${remaining} 个问题即可解锁`;
-          });
-        }
-
-        if (typeof window.updateCounters === "function") {
-          const originalUpdateCounters = window.updateCounters;
-          window.updateCounters = function () {
-            originalUpdateCounters();
-            updateMilestones();
-          };
-        }
-
-        document.addEventListener("click", (event) => {
-          if (event.target.closest(".complete-button") || event.target.closest("#resetButton")) {
-            setTimeout(updateMilestones, 0);
-          }
-        });
-
-        updateMilestones();
+        await loadScript("./answer-review.js?v=2");
+        await loadScript("./reward-link.js?v=1");
       } catch (error) {
+        document.body.className = "";
         document.body.innerHTML = `
           <div class="loading-card">
             <h1>加载失败</h1>
