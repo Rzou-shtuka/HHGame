@@ -6,1014 +6,258 @@
   <meta name="theme-color" content="#174c35" />
   <title>HOUHOU GAME</title>
   <style>
-    :root {
-      --green-950: #0b2e21;
-      --green-900: #123d2c;
-      --green-800: #174c35;
-      --green-700: #236447;
-      --green-600: #32815c;
-      --green-500: #48a477;
-      --green-300: #9ad3b5;
-      --green-200: #c4e6d3;
-      --green-100: #e7f5ed;
-      --cream: #f8fbf7;
-      --white: #ffffff;
-      --ink: #173128;
-      --muted: #5c766b;
-      --gold: #f0c766;
-      --danger: #b64b45;
-      --shadow: 0 18px 50px rgba(4, 42, 28, 0.22);
-      --soft-shadow: 0 10px 28px rgba(4, 42, 28, 0.12);
-      --radius-xl: 26px;
-      --radius-lg: 18px;
-      --radius-md: 13px;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
     body {
       margin: 0;
       min-height: 100vh;
-      color: var(--ink);
+      display: grid;
+      place-items: center;
+      color: #fff;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
         "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-      background:
-        radial-gradient(circle at 10% 0%, rgba(151, 219, 181, 0.28), transparent 30%),
-        radial-gradient(circle at 95% 20%, rgba(240, 199, 102, 0.16), transparent 25%),
-        linear-gradient(135deg, var(--green-950), var(--green-700) 58%, #2d7654);
-      background-attachment: fixed;
+      background: linear-gradient(135deg, #0b2e21, #236447 58%, #2d7654);
     }
 
-    body.modal-open {
-      overflow: hidden;
-    }
-
-    button {
-      font: inherit;
-    }
-
-    .background-decoration {
-      position: fixed;
-      inset: 0;
-      overflow: hidden;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .leaf {
-      position: absolute;
-      width: 150px;
-      height: 70px;
-      border: 1px solid rgba(255, 255, 255, 0.11);
-      border-radius: 100% 0 100% 0;
-      transform: rotate(-28deg);
-    }
-
-    .leaf:nth-child(1) {
-      top: 9%;
-      left: -45px;
-    }
-
-    .leaf:nth-child(2) {
-      right: -55px;
-      top: 38%;
-      transform: rotate(148deg) scale(1.35);
-    }
-
-    .leaf:nth-child(3) {
-      left: 35%;
-      bottom: -30px;
-      transform: rotate(8deg) scale(1.7);
-    }
-
-    .site-shell {
-      position: relative;
-      z-index: 1;
-      width: min(1440px, calc(100% - 36px));
-      margin: 0 auto;
-      padding: 28px 0 42px;
-    }
-
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-      margin-bottom: 22px;
-      padding: 18px 22px;
-      color: var(--white);
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      border-radius: var(--radius-xl);
-      background: rgba(11, 46, 33, 0.48);
-      box-shadow: var(--soft-shadow);
-      backdrop-filter: blur(16px);
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .brand-mark {
-      display: grid;
-      place-items: center;
-      width: 48px;
-      height: 48px;
-      flex: 0 0 auto;
-      border-radius: 16px;
-      color: var(--green-950);
-      font-weight: 900;
-      letter-spacing: -1px;
-      background: linear-gradient(145deg, var(--green-200), var(--gold));
-      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
-    }
-
-    .brand h1 {
-      margin: 0;
-      font-size: clamp(1.35rem, 3vw, 2rem);
-      line-height: 1.1;
-      letter-spacing: 0.04em;
-    }
-
-    .brand p {
-      margin: 5px 0 0;
-      color: rgba(255, 255, 255, 0.72);
-      font-size: 0.9rem;
-    }
-
-    .top-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-
-    .ghost-button,
-    .primary-button,
-    .hint-button,
-    .complete-button,
-    .modal-button {
-      border: 0;
-      cursor: pointer;
-      transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
-    }
-
-    .ghost-button {
-      padding: 10px 14px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 999px;
-      color: var(--white);
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    .ghost-button:hover {
-      transform: translateY(-1px);
-      background: rgba(255, 255, 255, 0.14);
-    }
-
-    .game-layout {
-      display: grid;
-      grid-template-columns: minmax(0, 1.65fr) minmax(320px, 0.85fr);
-      gap: 22px;
-      align-items: start;
-    }
-
-    .panel {
-      overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      border-radius: var(--radius-xl);
-      background: rgba(248, 251, 247, 0.96);
-      box-shadow: var(--shadow);
-    }
-
-    .panel-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 22px 24px 17px;
-      border-bottom: 1px solid rgba(23, 76, 53, 0.1);
-    }
-
-    .panel-title-wrap h2 {
-      margin: 0;
-      font-size: 1.2rem;
-    }
-
-    .panel-title-wrap p {
-      margin: 5px 0 0;
-      color: var(--muted);
-      font-size: 0.88rem;
-    }
-
-    .counter {
-      flex: 0 0 auto;
-      padding: 8px 12px;
-      border-radius: 999px;
-      color: var(--green-800);
-      font-size: 0.82rem;
-      font-weight: 800;
-      background: var(--green-100);
-    }
-
-    .questions-list {
-      display: grid;
-      gap: 12px;
-      padding: 18px;
-    }
-
-    .question-card {
-      overflow: hidden;
-      border: 1px solid rgba(23, 76, 53, 0.13);
-      border-radius: var(--radius-lg);
-      background: var(--white);
-      box-shadow: 0 5px 16px rgba(18, 61, 44, 0.055);
-      transition: border-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
-    }
-
-    .question-card:hover {
-      transform: translateY(-1px);
-      border-color: rgba(50, 129, 92, 0.34);
-      box-shadow: 0 10px 24px rgba(18, 61, 44, 0.1);
-    }
-
-    .question-card.is-open {
-      border-color: var(--green-500);
-    }
-
-    .question-card.is-complete {
-      border-color: rgba(50, 129, 92, 0.38);
-      background: linear-gradient(135deg, var(--white), var(--green-100));
-    }
-
-    .question-toggle {
-      display: grid;
-      grid-template-columns: 42px minmax(0, 1fr) auto;
-      align-items: center;
-      gap: 13px;
-      width: 100%;
-      padding: 15px 16px;
-      border: 0;
-      color: var(--ink);
-      text-align: left;
-      background: transparent;
-      cursor: pointer;
-    }
-
-    .question-number {
-      display: grid;
-      place-items: center;
-      width: 42px;
-      height: 42px;
-      border-radius: 13px;
-      color: var(--white);
-      font-weight: 900;
-      background: linear-gradient(145deg, var(--green-700), var(--green-500));
-    }
-
-    .question-card.is-complete .question-number {
-      background: var(--green-800);
-    }
-
-    .question-title {
-      min-width: 0;
-      font-weight: 800;
-      line-height: 1.4;
-    }
-
-    .question-subtitle {
-      display: block;
-      margin-top: 3px;
-      color: var(--muted);
-      font-size: 0.78rem;
-      font-weight: 500;
-    }
-
-    .chevron {
-      width: 30px;
-      height: 30px;
-      display: grid;
-      place-items: center;
-      border-radius: 50%;
-      color: var(--green-800);
-      background: var(--green-100);
-      transition: transform 180ms ease;
-    }
-
-    .question-card.is-open .chevron {
-      transform: rotate(180deg);
-    }
-
-    .question-content {
-      display: grid;
-      grid-template-rows: 0fr;
-      transition: grid-template-rows 230ms ease;
-    }
-
-    .question-card.is-open .question-content {
-      grid-template-rows: 1fr;
-    }
-
-    .question-content-inner {
-      overflow: hidden;
-    }
-
-    .question-body {
-      padding: 2px 18px 18px 73px;
-    }
-
-    .question-prompt {
-      margin: 0 0 14px;
-      padding: 15px 16px;
-      border-left: 4px solid var(--green-500);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      color: #27463a;
-      line-height: 1.7;
-      background: var(--green-100);
-    }
-
-    .question-note {
-      margin: 0 0 14px;
-      color: var(--muted);
-      font-size: 0.86rem;
-      line-height: 1.6;
-    }
-
-    .complete-button {
-      padding: 9px 14px;
-      border-radius: 999px;
-      color: var(--white);
-      font-weight: 800;
-      background: var(--green-700);
-    }
-
-    .complete-button:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 8px 18px rgba(35, 100, 71, 0.22);
-    }
-
-    .question-card.is-complete .complete-button {
-      color: var(--green-900);
-      background: var(--green-200);
-    }
-
-    .hints-panel {
-      position: sticky;
-      top: 18px;
-    }
-
-    .hints-list {
-      display: grid;
-      gap: 13px;
-      padding: 18px;
-    }
-
-    .hint-card {
-      padding: 16px;
-      border: 1px solid rgba(23, 76, 53, 0.12);
-      border-radius: var(--radius-lg);
-      background: var(--white);
-      box-shadow: 0 5px 16px rgba(18, 61, 44, 0.055);
-    }
-
-    .hint-card-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 13px;
-    }
-
-    .hint-card h3 {
-      margin: 0;
-      font-size: 1rem;
-    }
-
-    .hint-status {
-      padding: 5px 9px;
-      border-radius: 999px;
-      color: var(--muted);
-      font-size: 0.7rem;
-      font-weight: 800;
-      background: #eef3f0;
-    }
-
-    .hint-buttons {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 9px;
-    }
-
-    .hint-button {
-      padding: 10px 8px;
-      border-radius: 11px;
-      font-size: 0.84rem;
-      font-weight: 800;
-    }
-
-    .hint-button.small {
-      color: var(--green-900);
-      background: var(--green-100);
-    }
-
-    .hint-button.big {
-      color: #5d4311;
-      background: #fff0c8;
-    }
-
-    .hint-button:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 7px 16px rgba(18, 61, 44, 0.12);
-    }
-
-    .hint-reveal {
-      display: none;
-      margin-top: 12px;
-      padding: 13px 14px;
-      border-radius: var(--radius-md);
-      color: #27463a;
-      font-size: 0.88rem;
-      line-height: 1.65;
-      background: var(--green-100);
-      animation: reveal 220ms ease;
-    }
-
-    .hint-reveal.big-reveal {
-      color: #624919;
-      background: #fff5dc;
-    }
-
-    .hint-reveal.is-visible {
-      display: block;
-    }
-
-    .footer-note {
-      margin: 18px 0 0;
-      color: rgba(255, 255, 255, 0.64);
+    .loading-card {
+      width: min(420px, calc(100% - 40px));
+      padding: 28px;
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 24px;
       text-align: center;
-      font-size: 0.78rem;
+      background: rgba(11,46,33,.55);
+      box-shadow: 0 20px 60px rgba(0,0,0,.22);
+      backdrop-filter: blur(14px);
     }
 
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      z-index: 50;
-      display: grid;
-      place-items: center;
-      padding: 20px;
-      background: rgba(4, 29, 20, 0.74);
-      backdrop-filter: blur(9px);
-      transition: opacity 220ms ease, visibility 220ms ease;
-    }
-
-    .modal-backdrop.is-hidden {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-
-    .rules-modal {
-      width: min(570px, 100%);
-      overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.22);
-      border-radius: 30px;
-      background: var(--cream);
-      box-shadow: 0 30px 90px rgba(0, 0, 0, 0.34);
-      animation: modalIn 330ms cubic-bezier(.2,.75,.25,1);
-    }
-
-    .rules-hero {
-      padding: 30px 30px 25px;
-      color: var(--white);
-      background:
-        radial-gradient(circle at 80% 0%, rgba(240, 199, 102, 0.28), transparent 32%),
-        linear-gradient(135deg, var(--green-950), var(--green-600));
-    }
-
-    .rules-kicker {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      padding: 7px 11px;
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      border-radius: 999px;
-      color: var(--green-100);
-      font-size: 0.75rem;
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    .rules-hero h2 {
-      margin: 15px 0 8px;
-      font-size: clamp(1.8rem, 6vw, 2.7rem);
-      line-height: 1.1;
-    }
-
-    .rules-hero p {
-      margin: 0;
-      color: rgba(255, 255, 255, 0.76);
-      line-height: 1.65;
-    }
-
-    .rules-content {
-      padding: 24px 30px 30px;
-    }
-
-    .rules-list {
-      display: grid;
-      gap: 11px;
-      margin: 0 0 23px;
-      padding: 0;
-      list-style: none;
-    }
-
-    .rules-list li {
-      display: grid;
-      grid-template-columns: 31px minmax(0, 1fr);
-      gap: 11px;
-      align-items: start;
-      color: #315044;
-      line-height: 1.55;
-    }
-
-    .rule-number {
-      display: grid;
-      place-items: center;
-      width: 31px;
-      height: 31px;
-      border-radius: 10px;
-      color: var(--white);
-      font-size: 0.78rem;
-      font-weight: 900;
-      background: var(--green-700);
-    }
-
-    .modal-button {
-      width: 100%;
-      padding: 14px 18px;
-      border-radius: 15px;
-      color: var(--white);
-      font-weight: 900;
-      letter-spacing: 0.04em;
-      background: linear-gradient(135deg, var(--green-700), var(--green-500));
-      box-shadow: 0 11px 25px rgba(35, 100, 71, 0.25);
-    }
-
-    .modal-button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 15px 30px rgba(35, 100, 71, 0.3);
-    }
-
-    .confirm-dialog {
-      position: fixed;
-      inset: 0;
-      z-index: 60;
-      display: none;
-      place-items: center;
-      padding: 20px;
-      background: rgba(5, 28, 20, 0.68);
-      backdrop-filter: blur(7px);
-    }
-
-    .confirm-dialog.is-visible {
-      display: grid;
-    }
-
-    .confirm-box {
-      width: min(410px, 100%);
-      padding: 25px;
-      border-radius: 22px;
-      background: var(--white);
-      box-shadow: var(--shadow);
-      animation: modalIn 220ms ease;
-    }
-
-    .confirm-box h3 {
-      margin: 0 0 9px;
-      font-size: 1.25rem;
-    }
-
-    .confirm-box p {
-      margin: 0 0 20px;
-      color: var(--muted);
-      line-height: 1.6;
-    }
-
-    .confirm-actions {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .confirm-actions button {
-      padding: 11px 12px;
-      border: 0;
-      border-radius: 12px;
-      cursor: pointer;
-      font-weight: 800;
-    }
-
-    .cancel-confirm {
-      color: var(--green-900);
-      background: var(--green-100);
-    }
-
-    .accept-confirm {
-      color: #5d4311;
-      background: #ffe7a9;
-    }
-
-    @keyframes reveal {
-      from { opacity: 0; transform: translateY(-5px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes modalIn {
-      from { opacity: 0; transform: translateY(18px) scale(0.97); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-
-    @media (max-width: 920px) {
-      .game-layout {
-        grid-template-columns: 1fr;
-      }
-
-      .hints-panel {
-        position: static;
-      }
-    }
-
-    @media (max-width: 620px) {
-      .site-shell {
-        width: min(100% - 20px, 1440px);
-        padding-top: 10px;
-      }
-
-      .topbar {
-        align-items: flex-start;
-        padding: 16px;
-        border-radius: 20px;
-      }
-
-      .brand-mark {
-        width: 42px;
-        height: 42px;
-        border-radius: 13px;
-      }
-
-      .brand p {
-        display: none;
-      }
-
-      .top-actions {
-        flex-direction: column;
-      }
-
-      .ghost-button {
-        padding: 8px 10px;
-        font-size: 0.78rem;
-      }
-
-      .panel {
-        border-radius: 20px;
-      }
-
-      .panel-header {
-        padding: 18px 17px 14px;
-      }
-
-      .questions-list,
-      .hints-list {
-        padding: 12px;
-      }
-
-      .question-toggle {
-        grid-template-columns: 38px minmax(0, 1fr) auto;
-        gap: 10px;
-        padding: 13px;
-      }
-
-      .question-number {
-        width: 38px;
-        height: 38px;
-      }
-
-      .question-body {
-        padding: 0 13px 15px;
-      }
-
-      .question-prompt {
-        margin-top: 2px;
-      }
-
-      .rules-hero,
-      .rules-content {
-        padding-left: 22px;
-        padding-right: 22px;
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        scroll-behavior: auto !important;
-        transition-duration: 0.01ms !important;
-      }
-    }
+    .loading-card h1 { margin: 0 0 8px; }
+    .loading-card p { margin: 0; color: rgba(255,255,255,.72); }
   </style>
 </head>
-<body class="modal-open">
-  <div class="background-decoration" aria-hidden="true">
-    <span class="leaf"></span>
-    <span class="leaf"></span>
-    <span class="leaf"></span>
-  </div>
-
-  <main class="site-shell">
-    <header class="topbar">
-      <div class="brand">
-        <div class="brand-mark">HH</div>
-        <div>
-          <h1>HOUHOU GAME</h1>
-          <p>十二个问题 · 五张提示卡 · 一场只属于猴猴的问答游戏 （ZRP 保留所有解释权）</p>
-        </div>
-      </div>
-      <div class="top-actions">
-        <button class="ghost-button" id="showRulesButton" type="button">查看规则</button>
-        <button class="ghost-button" id="resetButton" type="button">重新开始</button>
-      </div>
-    </header>
-
-    <section class="game-layout" aria-label="问答游戏区域">
-      <section class="panel questions-panel">
-        <div class="panel-header">
-          <div class="panel-title-wrap">
-            <h2>12 个问题</h2>
-            <p>点击任意问题即可展开；不必按照顺序回答。</p>
-          </div>
-          <div class="counter" id="questionCounter">已完成 0 / 12</div>
-        </div>
-        <div class="questions-list" id="questionsList"></div>
-      </section>
-
-      <aside class="panel hints-panel">
-        <div class="panel-header">
-          <div class="panel-title-wrap">
-            <h2>5 个 Hint</h2>
-            <p>每张提示卡包含一个小提示和一个大提示。</p>
-          </div>
-          <div class="counter" id="hintCounter">已打开 0</div>
-        </div>
-        <div class="hints-list" id="hintsList"></div>
-      </aside>
-    </section>
-
-    <p class="footer-note">HOUHOU GAME · Made with a little green and a lot of curiosity.</p>
-  </main>
-
-  <div class="modal-backdrop" id="rulesModal" role="dialog" aria-modal="true" aria-labelledby="rulesTitle">
-    <section class="rules-modal">
-      <div class="rules-hero">
-        <span class="rules-kicker">暂时忘掉悲伤，孤独，和我Shtuka玩个游戏吧</span>
-        <h2 id="rulesTitle">准备好了吗？</h2>
-        <p>先看一下规则，然后开始这场问答游戏。你可以自由选择问题，也可以在需要时使用提示。</p>
-      </div>
-      <div class="rules-content">
-        <ol class="rules-list">
-          <li><span class="rule-number">1</span><span>左侧共有 <strong>12 个问题</strong>，点击问题即可展开内容。</span></li>
-          <li><span class="rule-number">2</span><span>问题不必按照顺序回答，回答完后可以标记为“已完成”。有的很难，有的很简单。</span></li>
-          <li><span class="rule-number">3</span><span>右侧共有 <strong>5 张 Hint 卡</strong>，每张都有“小提示”和“大提示”。</span></li>
-          <li><span class="rule-number">4</span><span>大提示会透露更多信息，打开前会再确认一次。祝你玩得开心。</span></li>
-        </ol>
-        <button class="modal-button" id="startButton" type="button">开始游戏</button>
-      </div>
-    </section>
-  </div>
-
-  <div class="confirm-dialog" id="confirmDialog" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
-    <div class="confirm-box">
-      <h3 id="confirmTitle">确定打开大提示吗？</h3>
-      <p>大提示会给出更明显的信息。打开后不能“假装没看过”哦。</p>
-      <div class="confirm-actions">
-        <button class="cancel-confirm" id="cancelConfirm" type="button">先不打开</button>
-        <button class="accept-confirm" id="acceptConfirm" type="button">确定打开</button>
-      </div>
-    </div>
+<body>
+  <div class="loading-card" id="loadingCard">
+    <h1>HOUHOU GAME</h1>
+    <p>正在加载游戏……</p>
   </div>
 
   <script>
-    /*
-      修改内容只需要编辑下面两个数组：
-      1. questions：12 个问题
-      2. hints：5 组小提示和大提示
-    */
+    (async function loadGame() {
+      try {
+        const response = await fetch("./game-source.html", { cache: "no-store" });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
-    const questions = [
-      { title: "问题一", prompt: "我（Shtuka）还有一个名字叫什么？", note: "这道题只有一个答案。" },
-      { title: "问题二", prompt: "在你和ZRP的所有对话中，你认为ZRP最喜欢的你说的一句话", note: "这道题有2个答案，一句英文，一句中文。任意一个都可以" },
-      { title: "问题三", prompt: "拍一拍", note: "：）" },
-      { title: "问题四", prompt: "这是一道开放式的题目，任意回答都是能被接受的。", note: "这里可以补充题目说明、回答方式或限制条件。" },
-      { title: "问题五", prompt: "过去一年你最喜欢的电影。", note: "这道题只有一个答案" },
-      { title: "问题六", prompt: "你和ZRP可能错过的一部电影,你们选择了去博物馆。", note: "这道题只有一个答案，英文" },
-      { title: "问题七", prompt: "找到Demo7 中有关7的元素", note: "这道题很难，你可以问问Shtuka，让她去撒娇找ZRP透题"  },
-      { title: "问题八", prompt: "ZRP 最近听得很多的一首歌", note: "这道题只有一个答案，英文" },
-      { title: "问题九", prompt: "第七个梦的密码是什么颜色的梦", note: "这道题只有一个答案" },
-      { title: "问题十", prompt: "Demo7 中", note: "这里可以补充题目说明、回答方式或限制条件。" },
-      { title: "问题十一", prompt: "请在这里填写第 11 个问题。", note: "这里可以补充题目说明、回答方式或限制条件。" },
-      { title: "问题十二", prompt: "请在这里填写第 12 个问题。", note: "这里可以补充题目说明、回答方式或限制条件。" }
-    ];
+        const source = await response.text();
+        const parsed = new DOMParser().parseFromString(source, "text/html");
+        const originalScripts = [...parsed.querySelectorAll("script")];
+        originalScripts.forEach((script) => script.remove());
 
-    const hints = [
-      { small: "Messages", big: "Around the end of April" },
-      { small: "Reels", big: "7/17 Reels" },
-      { small: "天使爱听催眠曲", big: "pg 186" },
-      { small: "这里填写 Hint 4 的小提示。", big: "这里填写 Hint 4 的大提示，可以说得更直接一些。" },
-      { small: "这里填写 Hint 5 的小提示。", big: "这里填写 Hint 5 的大提示，可以说得更直接一些。" }
-    ];
-
-    const questionsList = document.getElementById("questionsList");
-    const hintsList = document.getElementById("hintsList");
-    const rulesModal = document.getElementById("rulesModal");
-    const confirmDialog = document.getElementById("confirmDialog");
-    const questionCounter = document.getElementById("questionCounter");
-    const hintCounter = document.getElementById("hintCounter");
-
-    const completedQuestions = new Set();
-    const openedHints = new Set();
-    let pendingBigHintIndex = null;
-
-    function renderQuestions() {
-      questionsList.innerHTML = questions.map((question, index) => `
-        <article class="question-card" data-question-index="${index}">
-          <button class="question-toggle" type="button" aria-expanded="false">
-            <span class="question-number">${index + 1}</span>
-            <span class="question-title">
-              ${question.title}
-              <span class="question-subtitle">点击展开问题</span>
-            </span>
-            <span class="chevron" aria-hidden="true">⌄</span>
-          </button>
-          <div class="question-content">
-            <div class="question-content-inner">
-              <div class="question-body">
-                <p class="question-prompt">${question.prompt}</p>
-                <p class="question-note">${question.note}</p>
-                <button class="complete-button" type="button">标记为已完成</button>
-              </div>
-            </div>
-          </div>
-        </article>
-      `).join("");
-
-      document.querySelectorAll(".question-card").forEach((card) => {
-        const index = Number(card.dataset.questionIndex);
-        const toggle = card.querySelector(".question-toggle");
-        const completeButton = card.querySelector(".complete-button");
-
-        toggle.addEventListener("click", () => {
-          const willOpen = !card.classList.contains("is-open");
-          card.classList.toggle("is-open", willOpen);
-          toggle.setAttribute("aria-expanded", String(willOpen));
+        document.title = parsed.title || "HOUHOU GAME";
+        document.head.querySelectorAll("style").forEach((style) => style.remove());
+        parsed.head.querySelectorAll("style").forEach((style) => {
+          document.head.appendChild(style.cloneNode(true));
         });
 
-        completeButton.addEventListener("click", () => {
-          if (completedQuestions.has(index)) {
-            completedQuestions.delete(index);
-            card.classList.remove("is-complete");
-            completeButton.textContent = "标记为已完成";
-          } else {
-            completedQuestions.add(index);
-            card.classList.add("is-complete");
-            completeButton.textContent = "✓ 已完成（点击取消）";
+        document.body.className = parsed.body.className;
+        document.body.innerHTML = parsed.body.innerHTML;
+
+        const milestoneStyle = document.createElement("style");
+        milestoneStyle.textContent = `
+          .milestone-section {
+            margin-top: 22px;
+            padding: 22px;
+            border: 1px solid rgba(255,255,255,.25);
+            border-radius: var(--radius-xl);
+            background: rgba(248,251,247,.96);
+            box-shadow: var(--shadow);
           }
-          updateCounters();
-        });
-      });
-    }
 
-    function renderHints() {
-      hintsList.innerHTML = hints.map((hint, index) => `
-        <article class="hint-card" data-hint-index="${index}">
-          <div class="hint-card-top">
-            <h3>Hint ${index + 1}</h3>
-            <span class="hint-status">尚未打开</span>
-          </div>
-          <div class="hint-buttons">
-            <button class="hint-button small" type="button">打开小提示</button>
-            <button class="hint-button big" type="button">打开大提示</button>
-          </div>
-          <div class="hint-reveal small-reveal">${hint.small}</div>
-          <div class="hint-reveal big-reveal">${hint.big}</div>
-        </article>
-      `).join("");
+          .milestone-heading { margin-bottom: 16px; }
+          .milestone-heading h2 { margin: 0; font-size: 1.2rem; }
+          .milestone-heading p {
+            margin: 5px 0 0;
+            color: var(--muted);
+            font-size: .88rem;
+          }
 
-      document.querySelectorAll(".hint-card").forEach((card) => {
-        const index = Number(card.dataset.hintIndex);
-        const smallButton = card.querySelector(".hint-button.small");
-        const bigButton = card.querySelector(".hint-button.big");
-        const smallReveal = card.querySelector(".small-reveal");
-        const status = card.querySelector(".hint-status");
+          .milestone-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 13px;
+          }
 
-        smallButton.addEventListener("click", () => {
-          smallReveal.classList.toggle("is-visible");
-          if (smallReveal.classList.contains("is-visible")) {
-            openedHints.add(`small-${index}`);
-            status.textContent = "小提示已打开";
-            smallButton.textContent = "收起小提示";
-          } else {
-            smallButton.textContent = "打开小提示";
-            if (!card.querySelector(".big-reveal").classList.contains("is-visible")) {
-              status.textContent = "尚未打开";
+          .milestone-card {
+            position: relative;
+            overflow: hidden;
+            min-height: 190px;
+            padding: 20px;
+            border: 1px solid rgba(23,76,53,.13);
+            border-radius: var(--radius-lg);
+            background: var(--white);
+            box-shadow: 0 5px 16px rgba(18,61,44,.055);
+            transition: transform 220ms ease, border-color 220ms ease,
+              box-shadow 220ms ease, background 220ms ease;
+          }
+
+          .milestone-card::after {
+            content: "";
+            position: absolute;
+            width: 105px;
+            height: 105px;
+            right: -45px;
+            bottom: -50px;
+            border-radius: 50%;
+            background: rgba(50,129,92,.08);
+          }
+
+          .milestone-card.is-unlocked {
+            transform: translateY(-3px);
+            border-color: var(--gold);
+            background: linear-gradient(145deg, #fffdf7, var(--green-100));
+            box-shadow: 0 13px 30px rgba(18,61,44,.14);
+          }
+
+          .milestone-badge {
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 13px;
+            padding: 7px 10px;
+            border-radius: 999px;
+            color: var(--muted);
+            font-size: .75rem;
+            font-weight: 900;
+            background: #eef3f0;
+          }
+
+          .milestone-card.is-unlocked .milestone-badge {
+            color: #5d4311;
+            background: #fff0c8;
+          }
+
+          .milestone-card h3 {
+            margin: 0 0 9px;
+            color: var(--green-900);
+            font-size: 1.05rem;
+          }
+
+          .milestone-card p {
+            position: relative;
+            z-index: 1;
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.7;
+          }
+
+          .milestone-card.is-unlocked p { color: #315044; }
+
+          .milestone-state {
+            display: block;
+            margin-top: 14px;
+            color: var(--muted);
+            font-size: .76rem;
+            font-weight: 800;
+          }
+
+          .milestone-card.is-unlocked .milestone-state {
+            color: var(--green-700);
+          }
+
+          @media (max-width: 920px) {
+            .milestone-grid { grid-template-columns: 1fr; }
+            .milestone-card { min-height: 0; }
+          }
+
+          @media (max-width: 620px) {
+            .milestone-section {
+              padding: 16px;
+              border-radius: 20px;
             }
           }
-          updateCounters();
-        });
+        `;
+        document.head.appendChild(milestoneStyle);
 
-        bigButton.addEventListener("click", () => {
-          const bigReveal = card.querySelector(".big-reveal");
-          if (bigReveal.classList.contains("is-visible")) {
-            bigReveal.classList.remove("is-visible");
-            bigButton.textContent = "打开大提示";
-            status.textContent = smallReveal.classList.contains("is-visible") ? "小提示已打开" : "尚未打开";
-            return;
+        const footer = document.querySelector(".footer-note");
+        const milestoneSection = document.createElement("section");
+        milestoneSection.className = "milestone-section";
+        milestoneSection.id = "milestoneSection";
+        milestoneSection.setAttribute("aria-labelledby", "milestoneTitle");
+        milestoneSection.innerHTML = `
+          <div class="milestone-heading">
+            <h2 id="milestoneTitle">通关结果</h2>
+            <p>每完成一些问题，就会解锁一段新的结果。</p>
+          </div>
+          <div class="milestone-grid">
+            <article class="milestone-card" data-threshold="3">
+              <span class="milestone-badge">3 个问题</span>
+              <h3>特别通关</h3>
+              <p>当你成功回答 3 个问题，并且因为这个游戏感到一些快乐的时候，恭喜你，你成为了这世界上唯一一个通关的人哟。</p>
+              <span class="milestone-state">再完成 3 个问题即可解锁</span>
+            </article>
+            <article class="milestone-card" data-threshold="7">
+              <span class="milestone-badge">7 个问题</span>
+              <h3>奖励解锁</h3>
+              <p>当你成功回答 7 个问题，你就能解锁一个奖励：Demo7 背后的小故事。</p>
+              <span class="milestone-state">再完成 7 个问题即可解锁</span>
+            </article>
+            <article class="milestone-card" data-threshold="12">
+              <span class="milestone-badge">12 个问题</span>
+              <h3>完美通关</h3>
+              <p>当你成功回答 12 个问题，你就能完美通关，并得到一个关于彩蛋的提示。</p>
+              <span class="milestone-state">再完成 12 个问题即可解锁</span>
+            </article>
+          </div>
+        `;
+
+        if (footer && footer.parentNode) {
+          footer.parentNode.insertBefore(milestoneSection, footer);
+        } else {
+          document.querySelector("main")?.appendChild(milestoneSection);
+        }
+
+        for (const oldScript of originalScripts) {
+          const script = document.createElement("script");
+          if (oldScript.src) {
+            script.src = oldScript.src;
+          } else {
+            script.textContent = oldScript.textContent;
           }
-          pendingBigHintIndex = index;
-          confirmDialog.classList.add("is-visible");
+          document.body.appendChild(script);
+        }
+
+        function updateMilestones() {
+          const completed = document.querySelectorAll(".question-card.is-complete").length;
+          document.querySelectorAll(".milestone-card").forEach((card) => {
+            const threshold = Number(card.dataset.threshold);
+            const remaining = Math.max(0, threshold - completed);
+            const unlocked = completed >= threshold;
+            card.classList.toggle("is-unlocked", unlocked);
+            card.querySelector(".milestone-state").textContent = unlocked
+              ? "✓ 已解锁"
+              : `再完成 ${remaining} 个问题即可解锁`;
+          });
+        }
+
+        if (typeof window.updateCounters === "function") {
+          const originalUpdateCounters = window.updateCounters;
+          window.updateCounters = function () {
+            originalUpdateCounters();
+            updateMilestones();
+          };
+        }
+
+        document.addEventListener("click", (event) => {
+          if (event.target.closest(".complete-button") || event.target.closest("#resetButton")) {
+            setTimeout(updateMilestones, 0);
+          }
         });
-      });
-    }
 
-    function revealBigHint(index) {
-      const card = document.querySelector(`[data-hint-index="${index}"]`);
-      if (!card) return;
-      card.querySelector(".big-reveal").classList.add("is-visible");
-      card.querySelector(".hint-button.big").textContent = "收起大提示";
-      card.querySelector(".hint-status").textContent = "大提示已打开";
-      openedHints.add(`big-${index}`);
-      updateCounters();
-    }
-
-    function updateCounters() {
-      questionCounter.textContent = `已完成 ${completedQuestions.size} / ${questions.length}`;
-      hintCounter.textContent = `已打开 ${openedHints.size}`;
-    }
-
-    function openRules() {
-      rulesModal.classList.remove("is-hidden");
-      document.body.classList.add("modal-open");
-    }
-
-    function closeRules() {
-      rulesModal.classList.add("is-hidden");
-      document.body.classList.remove("modal-open");
-    }
-
-    document.getElementById("startButton").addEventListener("click", closeRules);
-    document.getElementById("showRulesButton").addEventListener("click", openRules);
-
-    document.getElementById("resetButton").addEventListener("click", () => {
-      const confirmed = window.confirm("确定重新开始吗？完成标记和已打开的提示会被清除。");
-      if (!confirmed) return;
-      completedQuestions.clear();
-      openedHints.clear();
-      pendingBigHintIndex = null;
-      renderQuestions();
-      renderHints();
-      updateCounters();
-      openRules();
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    });
-
-    document.getElementById("cancelConfirm").addEventListener("click", () => {
-      pendingBigHintIndex = null;
-      confirmDialog.classList.remove("is-visible");
-    });
-
-    document.getElementById("acceptConfirm").addEventListener("click", () => {
-      if (pendingBigHintIndex !== null) revealBigHint(pendingBigHintIndex);
-      pendingBigHintIndex = null;
-      confirmDialog.classList.remove("is-visible");
-    });
-
-    confirmDialog.addEventListener("click", (event) => {
-      if (event.target === confirmDialog) {
-        pendingBigHintIndex = null;
-        confirmDialog.classList.remove("is-visible");
+        updateMilestones();
+      } catch (error) {
+        document.body.innerHTML = `
+          <div class="loading-card">
+            <h1>加载失败</h1>
+            <p>请刷新页面重试。${String(error.message || error)}</p>
+          </div>
+        `;
       }
-    });
-
-    renderQuestions();
-    renderHints();
-    updateCounters();
+    })();
   </script>
 </body>
 </html>
