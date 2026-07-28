@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HOUHOU GAME · 管理页面</title>
+  <style>
+    :root { --green:#174c35; --light:#edf6f0; --muted:#68756e; --danger:#a63f39; }
+    * { box-sizing: border-box; }
+    body { margin:0; min-height:100vh; font-family:Inter,system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif; color:#163126; background:linear-gradient(135deg,#eaf4ed,#f7fbf8); }
+    main { width:min(1080px,calc(100% - 28px)); margin:32px auto; }
+    .panel { padding:24px; border:1px solid rgba(23,76,53,.14); border-radius:22px; background:rgba(255,255,255,.94); box-shadow:0 18px 50px rgba(23,76,53,.1); }
+    h1 { margin:0 0 8px; color:var(--green); }
+    p { color:var(--muted); }
+    .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    input { flex:1; min-width:240px; padding:12px 14px; border:1px solid rgba(23,76,53,.2); border-radius:12px; font-size:1rem; }
+    button { border:0; border-radius:999px; padding:11px 16px; font-weight:800; cursor:pointer; }
+    .primary { color:#fff; background:var(--green); }
+    .secondary { color:var(--green); background:var(--light); }
+    .hidden { display:none !important; }
+    .toolbar { display:flex; justify-content:space-between; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:16px; }
+    .status { font-size:.9rem; color:var(--muted); }
+    .summary { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin:16px 0; }
+    .summary div { padding:15px; border-radius:16px; background:var(--light); }
+    .summary strong { display:block; font-size:1.45rem; color:var(--green); }
+    .table-wrap { overflow:auto; border:1px solid rgba(23,76,53,.12); border-radius:16px; }
+    table { width:100%; border-collapse:collapse; min-width:780px; }
+    th,td { padding:12px 13px; text-align:left; border-bottom:1px solid rgba(23,76,53,.09); vertical-align:top; }
+    th { background:#f3f8f5; color:var(--green); font-size:.82rem; }
+    td { font-size:.9rem; }
+    .correct { color:#207447; font-weight:800; }
+    .wrong { color:var(--danger); font-weight:800; }
+    .answer { max-width:390px; white-space:pre-wrap; word-break:break-word; }
+    .empty { padding:28px; text-align:center; color:var(--muted); }
+    @media (max-width:700px) { .summary { grid-template-columns:1fr; } .panel { padding:17px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="panel" id="loginPanel">
+      <h1>出题人管理页面</h1>
+      <p>输入管理邮箱，Supabase 会发送一个登录链接。只有指定邮箱能够读取回答。</p>
+      <div class="row">
+        <input id="emailInput" type="email" value="rzouh1p@gmail.com" autocomplete="email" />
+        <button class="primary" id="loginButton">发送登录链接</button>
+      </div>
+      <p class="status" id="loginStatus"></p>
+    </section>
+
+    <section class="panel hidden" id="dashboard">
+      <div class="toolbar">
+        <div>
+          <h1>回答记录</h1>
+          <div class="status" id="accountStatus"></div>
+        </div>
+        <div class="row">
+          <button class="secondary" id="refreshButton">刷新</button>
+          <button class="secondary" id="logoutButton">退出登录</button>
+        </div>
+      </div>
+
+      <div class="summary">
+        <div><strong id="submissionCount">0</strong><span>总提交次数</span></div>
+        <div><strong id="correctCount">0</strong><span>正确提交</span></div>
+        <div><strong id="latestTime">—</strong><span>最近提交</span></div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>时间</th><th>题号</th><th>问题</th><th>回答</th><th>结果</th><th>设备会话</th></tr></thead>
+          <tbody id="answerRows"></tbody>
+        </table>
+        <div class="empty hidden" id="emptyState">还没有收到回答。</div>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./supabase-config.js?v=1"></script>
+  <script>
+    (() => {
+      const config = window.HOUHOU_SUPABASE;
+      const client = window.supabase.createClient(config.url, config.publishableKey);
+      const loginPanel = document.getElementById('loginPanel');
+      const dashboard = document.getElementById('dashboard');
+      const loginStatus = document.getElementById('loginStatus');
+      const rows = document.getElementById('answerRows');
+      const emptyState = document.getElementById('emptyState');
+
+      function escapeHtml(value) {
+        return String(value ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+      }
+
+      function formatTime(value) {
+        return value ? new Date(value).toLocaleString('zh-CN') : '—';
+      }
+
+      async function loadAnswers() {
+        rows.innerHTML = '';
+        const { data, error } = await client
+          .from('answer_submissions')
+          .select('id,session_id,question_number,question_text,answer_text,is_correct,submitted_at')
+          .order('submitted_at', { ascending: false })
+          .limit(500);
+
+        if (error) {
+          rows.innerHTML = `<tr><td colspan="6" class="wrong">读取失败：${escapeHtml(error.message)}</td></tr>`;
+          return;
+        }
+
+        const list = data || [];
+        document.getElementById('submissionCount').textContent = list.length;
+        document.getElementById('correctCount').textContent = list.filter(x => x.is_correct).length;
+        document.getElementById('latestTime').textContent = list.length ? formatTime(list[0].submitted_at) : '—';
+        emptyState.classList.toggle('hidden', list.length > 0);
+
+        rows.innerHTML = list.map(item => `
+          <tr>
+            <td>${escapeHtml(formatTime(item.submitted_at))}</td>
+            <td>问题 ${item.question_number}</td>
+            <td>${escapeHtml(item.question_text)}</td>
+            <td class="answer">${escapeHtml(item.answer_text)}</td>
+            <td class="${item.is_correct ? 'correct' : 'wrong'}">${item.is_correct ? '正确' : '错误'}</td>
+            <td>${escapeHtml(String(item.session_id).slice(0, 12))}…</td>
+          </tr>`).join('');
+      }
+
+      async function showSession(session) {
+        const email = session?.user?.email?.toLowerCase();
+        const allowed = email === config.adminEmail.toLowerCase();
+        loginPanel.classList.toggle('hidden', allowed);
+        dashboard.classList.toggle('hidden', !allowed);
+        if (allowed) {
+          document.getElementById('accountStatus').textContent = `已登录：${email}`;
+          await loadAnswers();
+        } else if (session) {
+          loginStatus.textContent = '这个账号没有查看权限。';
+          await client.auth.signOut();
+        }
+      }
+
+      document.getElementById('loginButton').addEventListener('click', async () => {
+        const email = document.getElementById('emailInput').value.trim().toLowerCase();
+        if (email !== config.adminEmail.toLowerCase()) {
+          loginStatus.textContent = '只能使用指定的管理邮箱。';
+          return;
+        }
+        loginStatus.textContent = '正在发送……';
+        const redirectTo = `${location.origin}${location.pathname}`;
+        const { error } = await client.auth.signInWithOtp({ email, options: { emailRedirectTo: redirectTo } });
+        loginStatus.textContent = error ? `发送失败：${error.message}` : '登录链接已经发送，请检查邮箱。';
+      });
+
+      document.getElementById('refreshButton').addEventListener('click', loadAnswers);
+      document.getElementById('logoutButton').addEventListener('click', async () => {
+        await client.auth.signOut();
+        location.reload();
+      });
+
+      client.auth.onAuthStateChange((_event, session) => showSession(session));
+      client.auth.getSession().then(({ data }) => showSession(data.session));
+    })();
+  </script>
+</body>
+</html>
